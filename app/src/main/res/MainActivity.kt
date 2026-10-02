@@ -1,5 +1,3 @@
-package com.example.barberdate
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -46,11 +44,11 @@ fun PrimeraPantalla(onNavigate: (String) -> Unit) {
     ) {
         Text("Reserva en Barber Date", style = MaterialTheme.typography.headlineSmall)
         Spacer(modifier = Modifier.height(16.dp))
-
+        
         OutlinedTextField(
             value = nombreCliente,
-            onValueChange = {
-                nombreCliente = it
+            onValueChange = { 
+                nombreCliente = it 
                 if (mostrarError) mostrarError = false
             },
             label = { Text("Nombre del cliente") },
@@ -91,11 +89,11 @@ fun SegundaPantalla(nombreRecibido: String, onNavigateBack: () -> Unit) {
     ) {
         Text(text = "Cita confirmada para:", style = MaterialTheme.typography.titleMedium)
         Text(
-            text = nombreRecibido,
+            text = nombreRecibido, 
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.primary
         )
-
+        
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(onClick = onNavigateBack) {
