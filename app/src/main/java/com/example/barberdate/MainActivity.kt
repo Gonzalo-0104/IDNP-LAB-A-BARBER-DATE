@@ -16,7 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.barberdate.ui.theme.BarberDateTheme
-
+import androidx.compose.ui.text.rememberTextMeasurer
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,45 +38,114 @@ class MainActivity : ComponentActivity() {
 fun PrimeraPantalla(onNavigate: (String) -> Unit) {
     var nombreCliente by remember { mutableStateOf("") }
     var mostrarError by remember { mutableStateOf(false) }
+    val nameApp = "Barber Date"
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Reserva en Barber Date", style = MaterialTheme.typography.headlineSmall)
-        Spacer(modifier = Modifier.height(16.dp))
+        Column(
+            modifier = Modifier.widthIn(max = 500.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TituloReserva(nameApp)
+            Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = nombreCliente,
-            onValueChange = {
-                nombreCliente = it
-                if (mostrarError) mostrarError = false
-            },
-            label = { Text("Nombre del cliente") },
-            isError = mostrarError,
-            singleLine = true
-        )
-
-        if (mostrarError) {
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "El nombre no puede estar vacío",
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall
+            OutlinedTextField(
+                value = nombreCliente,
+                onValueChange = {
+                    nombreCliente = it
+                    if (mostrarError) mostrarError = false
+                },
+                label = { Text("Nombre del cliente") },
+                isError = mostrarError,
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
             )
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = {
-            if (nombreCliente.isNotBlank()) {
-                onNavigate(nombreCliente)
-            } else {
-                mostrarError = true
+            if (mostrarError) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "El nombre no puede estar vacío",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
-        }) {
-            Text("Confirmar Reserva")
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    if (nombreCliente.isNotBlank()) {
+                        onNavigate(nombreCliente)
+                    } else {
+                        mostrarError = true
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Confirmar Reserva")
+            }
+        }
+    }
+}
+
+// 1.1 Composable Title
+@Composable
+fun TituloReserva(nameApp: String) {
+    val textMeasurer = rememberTextMeasurer()
+    val style = MaterialTheme.typography.headlineSmall
+
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        val textoCompleto = "Reservar en $nameApp"
+
+        val anchoTexto = textMeasurer.measure(
+            text = textoCompleto,
+            style = style
+        ).size.width
+
+        if (anchoTexto <= constraints.maxWidth) {
+
+            // Todo cabe en una línea
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Reservar en",
+                    style = style
+                )
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                Text(
+                    text = nameApp,
+                    style = style,
+                    softWrap = false
+                )
+            }
+
+        } else {
+
+            // No cabe → dos líneas
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Reservar en",
+                    style = style
+                )
+
+                Text(
+                    text = nameApp,
+                    style = style,
+                    softWrap = false
+                )
+            }
         }
     }
 }
