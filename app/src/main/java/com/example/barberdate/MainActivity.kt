@@ -33,14 +33,16 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// 1. Primera pantalla (Estado y Validación)
+// 1. Primera pantalla del flujo de laboratorio: Formulario de Reserva con Estado y Validación
 @Composable
 fun PrimeraPantalla(onNavigate: (String) -> Unit) {
     var nombreCliente by remember { mutableStateOf("") }
     var mostrarError by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -81,11 +83,13 @@ fun PrimeraPantalla(onNavigate: (String) -> Unit) {
     }
 }
 
-// 2. Segunda pantalla (Recepción y Retorno)
+// 2. Segunda pantalla del flujo de laboratorio: Confirmación y Retorno
 @Composable
 fun SegundaPantalla(nombreRecibido: String, onNavigateBack: () -> Unit) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -104,23 +108,41 @@ fun SegundaPantalla(nombreRecibido: String, onNavigateBack: () -> Unit) {
     }
 }
 
-// 3. Configuración de Rutas
+// 3. Sistema de Navegación completo que vincula HomeScreen, PrimeraPantalla y SegundaPantalla
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "reserva") {
+    NavHost(navController = navController, startDestination = "home") {
+
+        // Ruta 1: Catálogo de servicios (HomeScreen)
+        composable("home") {
+            HomeScreen(
+                onNavigateToReserva = {
+                    navController.navigate("reserva")
+                }
+            )
+        }
+
+        // Ruta 2: Captura de nombre con validación (PrimeraPantalla)
         composable("reserva") {
             PrimeraPantalla(onNavigate = { nombre ->
                 navController.navigate("confirmacion/$nombre")
             })
         }
+
+        // Ruta 3: Muestra de resultado recibido (SegundaPantalla)
         composable(
             route = "confirmacion/{nombre}",
             arguments = listOf(navArgument("nombre") { type = NavType.StringType })
         ) { backStackEntry ->
             val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
-            SegundaPantalla(nombreRecibido = nombre, onNavigateBack = { navController.popBackStack() })
+            SegundaPantalla(
+                nombreRecibido = nombre,
+                onNavigateBack = {
+                    navController.popBackStack("home", inclusive = false)
+                }
+            )
         }
     }
 }

@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,7 +38,7 @@ data class Servicio(
 )
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(onNavigateToReserva: () -> Unit) {
 
     val servicios = listOf(
         Servicio("Corte", "Desde $15", "✂"),
@@ -96,7 +95,7 @@ fun HomeScreen() {
 
         // --- Acción principal ---
         Button(
-            onClick = { },
+            onClick = onNavigateToReserva, // Conectado con la acción de navegación
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp),
