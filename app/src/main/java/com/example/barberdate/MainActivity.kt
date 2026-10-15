@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// 1. Primera pantalla del flujo de laboratorio: Formulario de Reserva con Estado y Validación
+// 1. Primera pantalla: Formulario de Reserva con Estado y Validación
 @Composable
 fun PrimeraPantalla(onNavigate: (String) -> Unit) {
     var nombreCliente by remember { mutableStateOf("") }
@@ -152,7 +152,7 @@ fun TituloReserva(nameApp: String) {
     }
 }
 
-// 2. Segunda pantalla del flujo de laboratorio: Confirmación y Retorno
+// 2. Segunda pantalla: Confirmación y Retorno
 @Composable
 fun SegundaPantalla(nombreRecibido: String, onNavigateBack: () -> Unit) {
     Column(
@@ -181,26 +181,42 @@ fun SegundaPantalla(nombreRecibido: String, onNavigateBack: () -> Unit) {
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+    // ESTADO ELEVADO: Controla quién está logueado a nivel de toda la app
+    var usuarioLogueado by remember { mutableStateOf<String?>(null) }
 
     NavHost(navController = navController, startDestination = "home") {
 
-        // Ruta 1: Catálogo de servicios (HomeScreen)
+        // Ruta 1: Pantalla principal
         composable("home") {
             HomeScreen(
+                nombreUsuario = usuarioLogueado,
+                onNavigateToRegistro = { navController.navigate("registro") },
                 onNavigateToReserva = {
-                    navController.navigate("reserva")
+                    // Si intenta reservar sin sesión, lo mandamos a registrarse
+                    if (usuarioLogueado == null) {
+                        navController.navigate("registro")
+                    } else {
+                        navController.navigate("confirmacion/$usuarioLogueado")
+                    }
+                },
+                onCerrarSesion = { usuarioLogueado = null } // Limpiamos el estado
+            )
+        }
+
+        // Ruta 2: Formulario de Registro
+        composable("registro") {
+            RegistroScreen(
+                onRegistroExitoso = { nombreCliente ->
+                    usuarioLogueado = nombreCliente // Guardamos el usuario en el estado global
+                    navController.popBackStack() // Volvemos al inicio ya logueados
+                },
+                onVolverInicio = {
+                    navController.popBackStack()
                 }
             )
         }
 
-        // Ruta 2: Captura de nombre con validación (PrimeraPantalla)
-        composable("reserva") {
-            PrimeraPantalla(onNavigate = { nombre ->
-                navController.navigate("confirmacion/$nombre")
-            })
-        }
-
-        // Ruta 3: Muestra de resultado recibido (SegundaPantalla)
+        // Ruta 3: Confirmación de reserva
         composable(
             route = "confirmacion/{nombre}",
             arguments = listOf(navArgument("nombre") { type = NavType.StringType })
