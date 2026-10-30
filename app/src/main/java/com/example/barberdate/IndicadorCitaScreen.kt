@@ -19,7 +19,8 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun IndicadorCitaScreen(
-    viewModel: CitaViewModel = viewModel()
+    viewModel: CitaViewModel = viewModel(),
+    onVolverInicio: () -> Unit // 1. NUEVO PARÁMETRO AGREGADO
 ) {
     val estado by viewModel.uiState.collectAsState()
 
@@ -157,6 +158,11 @@ fun IndicadorCitaScreen(
                     )
                 }
             }
+        }
+        Spacer(Modifier.height(24.dp))
+
+        TextButton(onClick = onVolverInicio) {
+            Text("Volver al inicio")
         }
     }
 }

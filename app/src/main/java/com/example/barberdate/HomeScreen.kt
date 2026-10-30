@@ -45,6 +45,8 @@ fun HomeScreen(
     nombreUsuario: String?,
     onNavigateToRegistro: () -> Unit,
     onNavigateToReserva: () -> Unit,
+    onNavigateToIndicador: () -> Unit,
+    onNavigateToEspecialistas: () -> Unit,
     onCerrarSesion: () -> Unit
 ) {
     val servicios = listOf(
@@ -117,23 +119,17 @@ fun HomeScreen(
 
         // --- Acción principal dinámica ---
         if (nombreUsuario == null) {
-            // Si no está logueado, pide registro
             OutlinedButton(
                 onClick = onNavigateToRegistro,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
+                modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text("Registrarse / Iniciar Sesión", fontWeight = FontWeight.SemiBold)
             }
         } else {
-            // Si está logueado, permite reservar y aplica tu color BarberGold
             Button(
                 onClick = onNavigateToReserva,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
+                modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = BarberGold,
@@ -142,6 +138,24 @@ fun HomeScreen(
             ) {
                 Text("Reservar Servicios", fontWeight = FontWeight.SemiBold)
             }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedButton(
+            onClick = onNavigateToEspecialistas,
+            modifier = Modifier.fillMaxWidth().height(52.dp),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text("Conoce a Nuestros Especialistas", fontWeight = FontWeight.SemiBold)
+        }
+
+        OutlinedButton(
+            onClick = onNavigateToIndicador,
+            modifier = Modifier.fillMaxWidth().height(52.dp),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text("Ver Indicador de Citas (Prueba)", fontWeight = FontWeight.SemiBold)
         }
     }
 }

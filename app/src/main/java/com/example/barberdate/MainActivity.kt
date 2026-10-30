@@ -192,14 +192,16 @@ fun AppNavigation() {
                 nombreUsuario = usuarioLogueado,
                 onNavigateToRegistro = { navController.navigate("registro") },
                 onNavigateToReserva = {
-                    // Si intenta reservar sin sesión, lo mandamos a registrarse
                     if (usuarioLogueado == null) {
                         navController.navigate("registro")
                     } else {
                         navController.navigate("confirmacion/$usuarioLogueado")
                     }
                 },
-                onCerrarSesion = { usuarioLogueado = null } // Limpiamos el estado
+                onNavigateToIndicador = { navController.navigate("indicador") },
+                // NUEVA NAVEGACIÓN
+                onNavigateToEspecialistas = { navController.navigate("especialistas") },
+                onCerrarSesion = { usuarioLogueado = null }
             )
         }
 
@@ -227,6 +229,22 @@ fun AppNavigation() {
                 onNavigateBack = {
                     navController.popBackStack("home", inclusive = false)
                 }
+            )
+        }
+
+        // RUTA 4: Indicador de Citas
+        composable("indicador") {
+            IndicadorCitaScreen(
+                onVolverInicio = {
+                    navController.popBackStack() // Esto cierra la pantalla y vuelve al Home
+                }
+            )
+        }
+
+        // Ruta 5: Especialistas
+        composable("especialistas") {
+            EspecialistasScreen(
+                onVolver = { navController.popBackStack() }
             )
         }
     }
