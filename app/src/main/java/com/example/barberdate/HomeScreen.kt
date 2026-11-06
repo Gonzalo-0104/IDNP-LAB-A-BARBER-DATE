@@ -17,10 +17,15 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -43,6 +48,8 @@ data class Servicio(
 @Composable
 fun HomeScreen(
     nombreUsuario: String?,
+    temaOscuro: Boolean,
+    onToggleTema: () -> Unit,
     onNavigateToRegistro: () -> Unit,
     onNavigateToReserva: () -> Unit,
     onNavigateToIndicador: () -> Unit,
@@ -50,12 +57,12 @@ fun HomeScreen(
     onCerrarSesion: () -> Unit
 ) {
     val servicios = listOf(
-        Servicio("Corte", "Desde $15", "✂"),
-        Servicio("Uñas", "Desde $25", "✿"),
-        Servicio("Terapia", "Desde $45", "♡"),
-        Servicio("Color", "Desde $35", "✎"),
-        Servicio("Barba", "Desde $10", "◉"),
-        Servicio("Masaje", "Desde $30", "✿")
+        Servicio("Corte", "Desde \$15", "✂"),
+        Servicio("Uñas", "Desde \$25", "✿"),
+        Servicio("Terapia", "Desde \$45", "♡"),
+        Servicio("Color", "Desde \$35", "✎"),
+        Servicio("Barba", "Desde \$10", "◉"),
+        Servicio("Masaje", "Desde \$30", "✿")
     )
 
     Column(
@@ -70,7 +77,7 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = if (nombreUsuario != null) "Hola, $nombreUsuario 👋" else "Bienvenido 👋",
                     style = MaterialTheme.typography.headlineSmall,
@@ -80,6 +87,15 @@ fun HomeScreen(
                     text = if (nombreUsuario != null) "¿Qué te vas a hacer hoy?" else "Inicia sesión para reservar",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            // Botón de tema oscuro/claro — persiste la preferencia en DataStore
+            IconButton(onClick = onToggleTema) {
+                Icon(
+                    imageVector = if (temaOscuro) Icons.Filled.LightMode else Icons.Filled.DarkMode,
+                    contentDescription = if (temaOscuro) "Cambiar a tema claro" else "Cambiar a tema oscuro",
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
 

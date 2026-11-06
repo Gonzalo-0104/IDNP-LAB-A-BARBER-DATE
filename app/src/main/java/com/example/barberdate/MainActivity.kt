@@ -4,12 +4,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,15 +19,27 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.barberdate.ui.theme.BarberDateTheme
 import androidx.compose.ui.text.rememberTextMeasurer
+
 class MainActivity : ComponentActivity() {
+
+    // ViewModel que gestiona la preferencia de tema persistida en DataStore
+    private val temaViewModel: TemaViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            BarberDateTheme {
+            // Observamos el StateFlow del ViewModel; cada vez que cambie,
+            // BarberDateTheme se recompone con el nuevo valor
+            val temaOscuro by temaViewModel.temaOscuro.collectAsStateWithLifecycle()
+
+            BarberDateTheme(darkTheme = temaOscuro) {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        AppNavigation()
+                        AppNavigation(
+                            temaOscuro = temaOscuro,
+                            onToggleTema = { temaViewModel.toggleTema() }
+                        )
                     }
                 }
             }
@@ -179,7 +193,10 @@ fun SegundaPantalla(nombreRecibido: String, onNavigateBack: () -> Unit) {
 
 // 3. Sistema de Navegación completo que vincula HomeScreen, PrimeraPantalla y SegundaPantalla
 @Composable
-fun AppNavigation() {
+fun AppNavigation(
+    temaOscuro: Boolean,
+    onToggleTema: () -> Unit
+) {
     val navController = rememberNavController()
     // ESTADO ELEVADO: Controla quién está logueado a nivel de toda la app
     var usuarioLogueado by remember { mutableStateOf<String?>(null) }
@@ -190,6 +207,8 @@ fun AppNavigation() {
         composable("home") {
             HomeScreen(
                 nombreUsuario = usuarioLogueado,
+                temaOscuro = temaOscuro,
+                onToggleTema = onToggleTema,
                 onNavigateToRegistro = { navController.navigate("registro") },
                 onNavigateToReserva = {
                     if (usuarioLogueado == null) {
@@ -199,7 +218,6 @@ fun AppNavigation() {
                     }
                 },
                 onNavigateToIndicador = { navController.navigate("indicador") },
-                // NUEVA NAVEGACIÓN
                 onNavigateToEspecialistas = { navController.navigate("especialistas") },
                 onCerrarSesion = { usuarioLogueado = null }
             )

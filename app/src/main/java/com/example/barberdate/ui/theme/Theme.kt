@@ -35,9 +35,10 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun BarberDateTheme(
+    // Ahora el tema viene de DataStore a través del ViewModel, no del sistema
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    // Color dinámico desactivado para que el cambio manual sea visible en todos los dispositivos
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
