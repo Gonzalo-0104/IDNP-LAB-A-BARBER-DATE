@@ -259,9 +259,9 @@ fun AppNavigation(
             )
         }
 
-        // Ruta 5: Especialistas
+        // Ruta 5: Especialistas (Lab 09 - Room)
         composable("especialistas") {
-            EspecialistasScreen(
+            EspecialistasRoomScreen(
                 onVolver = { navController.popBackStack() }
             )
         }
