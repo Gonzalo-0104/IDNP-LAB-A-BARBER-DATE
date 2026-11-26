@@ -11,6 +11,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.barberdate.data.model.Cita
 import com.example.barberdate.ui.viewmodel.CitaViewModel
 import com.google.firebase.Timestamp
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 
 @Composable
 fun PruebaFirestoreScreen(
@@ -116,18 +118,29 @@ fun PruebaFirestoreScreen(
             style = MaterialTheme.typography.titleMedium
         )
 
-        citas.forEach { cita ->
-            Card(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(12.dp)
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(
+                items = citas,
+                key = { cita -> cita.id }
+            ) { cita ->
+
+                Card(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Servicio: ${cita.servicio}")
-                    Text("Cliente: ${cita.clienteId}")
-                    Text("Barbero: ${cita.barberoId}")
-                    Text("Estado: ${cita.estado}")
-                    Text("ID: ${cita.id}")
+                    Column(
+                        modifier = Modifier.padding(12.dp)
+                    ) {
+                        Text("Servicio: ${cita.servicio}")
+                        Text("Cliente: ${cita.clienteId}")
+                        Text("Barbero: ${cita.barberoId}")
+                        Text("Estado: ${cita.estado}")
+                        Text("ID: ${cita.id}")
+                    }
                 }
             }
         }
