@@ -4,42 +4,37 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.barberdate.ui.theme.BarberDateTheme
 import androidx.compose.ui.text.rememberTextMeasurer
+import com.example.barberdate.ui.screens.PruebaFirestoreScreen
 
+// import com.google.firebase.Firebase
+// import com.google.firebase.initialize
 class MainActivity : ComponentActivity() {
-
-    // ViewModel que gestiona la preferencia de tema persistida en DataStore
-    private val temaViewModel: TemaViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        // Firebase.initialize(this)
         setContent {
-            // Observamos el StateFlow del ViewModel; cada vez que cambie,
-            // BarberDateTheme se recompone con el nuevo valor
-            val temaOscuro by temaViewModel.temaOscuro.collectAsStateWithLifecycle()
-
-            BarberDateTheme(darkTheme = temaOscuro) {
+            val temaViewModel: TemaViewModel = viewModel()
+            val temaOscuro by temaViewModel.temaOscuro.collectAsState()
+            BarberDateTheme(darkTheme = temaOscuro){
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        AppNavigation(
-                            temaOscuro = temaOscuro,
-                            onToggleTema = { temaViewModel.toggleTema() }
-                        )
+                        PruebaFirestoreScreen()
+                        //AppNavigation()
                     }
                 }
             }
@@ -193,13 +188,13 @@ fun SegundaPantalla(nombreRecibido: String, onNavigateBack: () -> Unit) {
 
 // 3. Sistema de Navegación completo que vincula HomeScreen, PrimeraPantalla y SegundaPantalla
 @Composable
-fun AppNavigation(
-    temaOscuro: Boolean,
-    onToggleTema: () -> Unit
-) {
+fun AppNavigation() {
     val navController = rememberNavController()
     // ESTADO ELEVADO: Controla quién está logueado a nivel de toda la app
     var usuarioLogueado by remember { mutableStateOf<String?>(null) }
+    val temaViewModel: TemaViewModel = viewModel()
+    val temaOscuro by temaViewModel.temaOscuro.collectAsState()
+    var rolUsuario by remember { mutableStateOf<String?>(null) }
 
     NavHost(navController = navController, startDestination = "home") {
 
@@ -208,7 +203,9 @@ fun AppNavigation(
             HomeScreen(
                 nombreUsuario = usuarioLogueado,
                 temaOscuro = temaOscuro,
-                onToggleTema = onToggleTema,
+                onToggleTema = {
+                    temaViewModel.toggleTema()
+                },
                 onNavigateToRegistro = { navController.navigate("registro") },
                 onNavigateToReserva = {
                     if (usuarioLogueado == null) {
@@ -218,6 +215,7 @@ fun AppNavigation(
                     }
                 },
                 onNavigateToIndicador = { navController.navigate("indicador") },
+                // NUEVA NAVEGACIÓN
                 onNavigateToEspecialistas = { navController.navigate("especialistas") },
                 onCerrarSesion = { usuarioLogueado = null }
             )
@@ -227,10 +225,20 @@ fun AppNavigation(
         composable("registro") {
             RegistroScreen(
                 onRegistroExitoso = { nombreCliente ->
-                    usuarioLogueado = nombreCliente // Guardamos el usuario en el estado global
-                    navController.popBackStack() // Volvemos al inicio ya logueados
+                    usuarioLogueado = nombreCliente
+                    navController.popBackStack()
                 },
                 onVolverInicio = {
+                    navController.popBackStack()
+                },
+                onIniciarComoCliente = {
+                    rolUsuario = "CLIENTE"
+                    usuarioLogueado = "Cliente"
+                    navController.popBackStack()
+                },
+                onIniciarComoBarbero = {
+                    rolUsuario = "BARBERO"
+                    usuarioLogueado = "Barbero"
                     navController.popBackStack()
                 }
             )
@@ -259,9 +267,9 @@ fun AppNavigation(
             )
         }
 
-        // Ruta 5: Especialistas (Lab 09 - Room)
+        // Ruta 5: Especialistas
         composable("especialistas") {
-            EspecialistasRoomScreen(
+            EspecialistasScreen(
                 onVolver = { navController.popBackStack() }
             )
         }

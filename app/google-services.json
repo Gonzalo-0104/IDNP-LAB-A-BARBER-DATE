@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "678631105468",
+    "project_id": "barberdate-3f76d",
+    "storage_bucket": "barberdate-3f76d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:678631105468:android:476f6b1b9f3c33b08b01b9",
+        "android_client_info": {
+          "package_name": "com.example.barberdate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClWnMqhTB4FhDbpxt0-IMcQ-bPCNchG7E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
