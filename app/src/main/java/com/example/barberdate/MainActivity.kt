@@ -19,6 +19,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.barberdate.ui.theme.BarberDateTheme
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Timer
 
 class MainActivity : ComponentActivity() {
 
@@ -205,22 +207,37 @@ fun AppNavigation(
 
         // Ruta 1: Pantalla principal
         composable("home") {
-            HomeScreen(
-                nombreUsuario = usuarioLogueado,
-                temaOscuro = temaOscuro,
-                onToggleTema = onToggleTema,
-                onNavigateToRegistro = { navController.navigate("registro") },
-                onNavigateToReserva = {
-                    if (usuarioLogueado == null) {
-                        navController.navigate("registro")
-                    } else {
-                        navController.navigate("confirmacion/$usuarioLogueado")
-                    }
-                },
-                onNavigateToIndicador = { navController.navigate("indicador") },
-                onNavigateToEspecialistas = { navController.navigate("especialistas") },
-                onCerrarSesion = { usuarioLogueado = null }
-            )
+            Column(modifier = Modifier.fillMaxSize()) {
+                Box(modifier = Modifier.weight(1f)) {
+                    HomeScreen(
+                        nombreUsuario = usuarioLogueado,
+                        temaOscuro = temaOscuro,
+                        onToggleTema = onToggleTema,
+                        onNavigateToRegistro = { navController.navigate("registro") },
+                        onNavigateToReserva = {
+                            if (usuarioLogueado == null) {
+                                navController.navigate("registro")
+                            } else {
+                                navController.navigate("confirmacion/$usuarioLogueado")
+                            }
+                        },
+                        onNavigateToIndicador = { navController.navigate("indicador") },
+                        onNavigateToEspecialistas = { navController.navigate("especialistas") },
+                        onCerrarSesion = { usuarioLogueado = null }
+                    )
+                }
+
+                Button(
+                    onClick = { navController.navigate("temporizador") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Icon(Icons.Default.Timer, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Temporizador de Servicio")
+                }
+            }
         }
 
         // Ruta 2: Formulario de Registro
@@ -262,6 +279,13 @@ fun AppNavigation(
         // Ruta 5: Especialistas (Lab 09 - Room)
         composable("especialistas") {
             EspecialistasRoomScreen(
+                onVolver = { navController.popBackStack() }
+            )
+        }
+
+        // Ruta 6: Temporizador en primer plano (Lab 11)
+        composable("temporizador") {
+            TemporizadorScreen(
                 onVolver = { navController.popBackStack() }
             )
         }
